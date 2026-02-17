@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wid Workout - Fitness Tracker</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            padding: 28px 24px;
+            box-shadow: 0 4px 20px rgba(30,64,175,0.4);
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .header p {
+            color: #dbeafe;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+        .nav {
+            display: flex;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+        }
+        .nav button {
+            flex: 1;
+            padding: 16px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            letter-spacing: 0.025em;
+            transition: all 0.2s;
+        }
+        .nav button.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 2px 12px rgba(59,130,246,0.3);
+        }
+        .nav button:hover:not(.active) {
+            background: #334155;
+        }
+        .container {
+            padding: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .day-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .day-btn {
+            padding: 14px 10px;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .day-btn.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+            box-shadow: 0 0 20px rgba(59,130,246,0.3);
+        }
+        .day-btn .name {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+        .day-btn .desc {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+        .exercise-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .exercise-header {
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s;
+        }
+        .exercise-header:hover {
+            background: #334155;
+        }
+        .exercise-header .left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .set-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #334155;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .set-badge.complete {
+            background: #10b981;
+            color: white;
+        }
+        .exercise-info h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+        .exercise-info p {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+        .exercise-body {
+            border-top: 1px solid #334155;
+            padding: 16px;
+            background: #0f172a;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9375rem;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        button.primary {
+            width: 100%;
+            padding: 12px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            letter-spacing: 0.01em;
+        }
+        button.primary:hover {
+            background: #2563eb;
+        }
+        button.primary:disabled {
+            background: #334155;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+        .set-list {
+            margin-bottom: 16px;
+        }
+        .set-item {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .set-item button {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .finish-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            margin-top: 24px;
+        }
+        .finish-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+        .label {
+            font-size: 0.75rem;
+            color: #64748b;
+            letter-spacing: 0.025em;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 500;
+        }
+        .info-banner {
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 0.8125rem;
+            color: #bfdbfe;
+        }
+        .mgmt-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .mgmt-btn.yellow {
+            background: rgba(234,179,8,0.2);
+            color: #fbbf24;
+        }
+        .mgmt-btn.blue {
+            background: rgba(59,130,246,0.2);
+            color: #60a5fa;
+        }
+        .mgmt-btn.red {
+            background: rgba(239,68,68,0.2);
+            color: #f87171;
+        }
+        .move-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 8px 0;
+            padding: 8px;
+            background: #1e293b;
+            border-radius: 8px;
+        }
+        .move-grid button {
+            padding: 8px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+        .hidden { display: none; }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+            font-weight: 500;
+        }
+        .badge.orange {
+            background: #f59e0b;
+            color: white;
+        }
+        .badge.blue {
+            background: #3b82f6;
+            color: white;
+        }
+        .pr-card {
+            background: rgba(234,179,8,0.1);
+            border: 1px solid rgba(234,179,8,0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        .pr-card .name {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+        .pr-card .value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fbbf24;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Wid Workout</h1>
+        <p>Track Your Progress • Build Strength • Stay Consistent</p>
+    </div>
+
+    <div class="nav">
+        <button class="active" onclick="switchView('workout')">WORKOUT</button>
+        <button onclick="switchView('progress')">PROGRESS</button>
+        <button onclick="switchView('history')">HISTORY</button>
+    </div>
+
+    <div class="container">
+        <!-- Workout View -->
+        <div id="workout-view">
+            <div class="info-banner">
+                💡 <strong>How it works:</strong> Sets and notes auto-save as you log them. Click "Finish Workout" when done.
+            </div>
+
+            <div class="day-selector">
+                <button class="day-btn active" onclick="selectDay('day1')">
+                    <div class="name">DAY 1</div>
+                    <div class="desc">Push + Squats</div>
+                </button>
+                <button class="day-btn" onclick="selectDay('day2')">
+                    <div class="name">DAY 2</div>
+                    <div class="desc">Pull + Deadlifts</div>
+                </button>
+                <button class="day-btn" onclick="selectDay('day3')">
+                    <div class="name">DAY 3</div>
+                    <div class="desc">Accessories + Core</div>
+                </button>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label class="label">WORKOUT NOTES (auto-saved)</label>
+                <textarea id="workout-notes" rows="2" placeholder="How are you feeling today?" onchange="saveWorkoutNote()"></textarea>
+            </div>
+
+            <div id="exercise-list"></div>
+
+            <button id="finish-btn" class="primary finish-btn hidden" onclick="finishWorkout()">
+                ✓ FINISH WORKOUT & SAVE
+            </button>
+        </div>
+
+        <!-- Progress View -->
+        <div id="progress-view" class="hidden">
+            <h2 style="font-size: 2rem; font-family: Impact; margin-bottom: 16px;">STRENGTH GAINS</h2>
+            <div id="progress-content"></div>
+        </div>
+
+        <!-- History View -->
+        <div id="history-view" class="hidden">
+            <h2 style="font-size: 2rem; font-family: Impact; margin-bottom: 16px;">WORKOUT LOG</h2>
+            <div id="history-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const exercises = {
+            day1: {
+                name: 'Day 1: Push + Squats',
+                exercises: [
+                    { id: 'bench', name: 'Bench Press', sets: 3, reps: '8-12', muscle: 'Chest' },
+                    { id: 'ohp', name: 'Overhead Press', sets: 3, reps: '8-12', muscle: 'Shoulders' },
+                    { id: 'incline', name: 'Incline DB Press', sets: 3, reps: '8-12', muscle: 'Upper Chest' },
+                    { id: 'dips', name: 'Dips / Tricep Pushdown', sets: 3, reps: '10-15', muscle: 'Triceps' },
+                    { id: 'squat', name: 'Back Squat', sets: 3, reps: '6-10', muscle: 'Legs' },
+                    { id: 'weighted-crunch', name: 'Weighted Ab Crunch', sets: 3, reps: '12-15', muscle: 'Core' },
+                    { id: 'plank', name: 'Plank', sets: 3, reps: '30-60s', muscle: 'Core' }
+                ]
+            },
+            day2: {
+                name: 'Day 2: Pull + Deadlifts',
+                exercises: [
+                    { id: 'pullup', name: 'Pull-Ups / Lat Pulldown', sets: 3, reps: 'AMRAP/8-12', muscle: 'Lats' },
+                    { id: 'row', name: 'Bent-Over Row', sets: 3, reps: '8-12', muscle: 'Mid Back' },
+                    { id: 'deadlift', name: 'Romanian Deadlift', sets: 3, reps: '8-12', muscle: 'Hamstrings' },
+                    { id: 'face', name: 'Face Pulls', sets: 3, reps: '12-15', muscle: 'Rear Delts' },
+                    { id: 'cable', name: 'Cable / DB Row', sets: 3, reps: '8-12', muscle: 'Back' },
+                    { id: 'curl', name: 'Bicep Curls', sets: 3, reps: '10-15', muscle: 'Biceps' }
+                ]
+            },
+            day3: {
+                name: 'Day 3: Upper Accessories + Core',
+                exercises: [
+                    { id: 'cable-lateral', name: 'Cable Lateral Raises', sets: 3, reps: '12-15', muscle: 'Side Delts' },
+                    { id: 'skullcrusher', name: 'Skull Crushers', sets: 3, reps: '10-12', muscle: 'Triceps' },
+                    { id: 'hammer', name: 'Hammer Curls', sets: 3, reps: '10-12', muscle: 'Biceps' },
+                    { id: 'cable-fly', name: 'Cable Flyes', sets: 3, reps: '12-15', muscle: 'Chest' },
+                    { id: 'ab-wheel', name: 'Ab Wheel Rollout', sets: 3, reps: '10-15', muscle: 'Core' },
+                    { id: 'leg-raise', name: 'Hanging Leg Raises', sets: 3, reps: '10-15', muscle: 'Lower Abs' }
+                ]
+            }
+        };
+
+        let currentDay = 'day1';
+        let currentView = 'workout';
+        let workoutData = JSON.parse(localStorage.getItem('workout-data') || '{}');
+        let workoutHistory = JSON.parse(localStorage.getItem('workout-history') || '[]');
+        let personalRecords = JSON.parse(localStorage.getItem('prs') || '{}');
+        let workoutNotes = JSON.parse(localStorage.getItem('workout-notes') || '{}');
+        let exerciseNotes = JSON.parse(localStorage.getItem('exercise-notes') || '{}');
+
+        function getToday() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function getTodaySets(exerciseId) {
+            const today = getToday();
+            return workoutData[today]?.[currentDay]?.[exerciseId] || [];
+        }
+
+        function switchView(view) {
+            currentView = view;
+            document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('workout-view').classList.toggle('hidden', view !== 'workout');
+            document.getElementById('progress-view').classList.toggle('hidden', view !== 'progress');
+            document.getElementById('history-view').classList.toggle('hidden', view !== 'history');
+
+            if (view === 'progress') renderProgress();
+            if (view === 'history') renderHistory();
+        }
+
+        function selectDay(day) {
+            currentDay = day;
+            document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.day-btn').classList.add('active');
+            
+            // Load workout note for this day
+            const noteKey = `${getToday()}-${currentDay}`;
+            document.getElementById('workout-notes').value = workoutNotes[noteKey] || '';
+            
+            renderExercises();
+        }
+
+        function saveWorkoutNote() {
+            const noteKey = `${getToday()}-${currentDay}`;
+            workoutNotes[noteKey] = document.getElementById('workout-notes').value;
+            localStorage.setItem('workout-notes', JSON.stringify(workoutNotes));
+        }
+
+        function renderExercises() {
+            const list = document.getElementById('exercise-list');
+            list.innerHTML = '';
+
+            exercises[currentDay].exercises.forEach(ex => {
+                const sets = getTodaySets(ex.id);
+                const completed = sets.length >= ex.sets;
+                const pr = personalRecords[ex.id];
+
+                const card = document.createElement('div');
+                card.className = 'exercise-card';
+                card.innerHTML = `
+                    <div class="exercise-header" onclick="toggleExercise('${ex.id}')">
+                        <div class="left">
+                            <div class="set-badge ${completed ? 'complete' : ''}">
+                                ${completed ? '✓' : `${sets.length}/${ex.sets}`}
+                            </div>
+                            <div class="exercise-info">
+                                <h3>${ex.name}</h3>
+                                <p>${ex.sets} sets • ${ex.reps} reps • ${ex.muscle} ${pr ? `• PR: ${pr} lbs` : ''}</p>
+                            </div>
+                        </div>
+                        <span>›</span>
+                    </div>
+                    <div id="ex-${ex.id}" class="exercise-body hidden">
+                        <!-- Form Video Link -->
+                        <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name + ' proper form')}" 
+                           target="_blank" 
+                           style="display: flex; align-items: center; gap: 8px; color: #3b82f6; text-decoration: none; font-size: 0.875rem; margin-bottom: 16px;">
+                            <span>▶</span> Watch Form Video
+                        </a>
+
+                        <!-- Exercise Notes -->
+                        <div style="margin-bottom: 16px;">
+                            <label class="label">EXERCISE NOTES (auto-saved)</label>
+                            <input type="text" id="note-${ex.id}" placeholder="Tempo, cues..." 
+                                value="${exerciseNotes[`${currentDay}-${ex.id}`] || ''}"
+                                onchange="saveExerciseNote('${ex.id}')">
+                        </div>
+
+                        <!-- Today's Sets -->
+                        <div id="sets-${ex.id}" class="set-list"></div>
+
+                        <!-- Add Set Inputs -->
+                        <div class="input-grid">
+                            <input type="number" id="weight-${ex.id}" placeholder="Weight (lbs)">
+                            <input type="number" id="reps-${ex.id}" placeholder="Reps">
+                        </div>
+                        <button class="primary" onclick="addSet('${ex.id}')">LOG SET</button>
+
+                        <!-- Management Buttons -->
+                        ${pr ? `<button class="mgmt-btn yellow" onclick="clearPR('${ex.id}')">Clear PR (${pr} lbs)</button>` : ''}
+                        
+                        <button class="mgmt-btn blue" onclick="toggleMoveMenu('${ex.id}')">
+                            <span id="move-label-${ex.id}">Move to Different Day</span>
+                        </button>
+                        <div id="move-menu-${ex.id}" class="hidden move-grid">
+                            ${Object.keys(exercises).filter(d => d !== currentDay).map(day => 
+                                `<button onclick="moveExercise('${ex.id}', '${day}')">${exercises[day].name.split(':')[0]}</button>`
+                            ).join('')}
+                        </div>
+                        
+                        <button class="mgmt-btn red" onclick="removeExercise('${ex.id}')">Remove Exercise</button>
+                    </div>
+                `;
+                list.appendChild(card);
+
+                renderSets(ex.id);
+            });
+
+            // Add Custom Exercise Button
+            const addBtn = document.createElement('button');
+            addBtn.className = 'primary';
+            addBtn.style.cssText = 'background: #1e293b; border: 2px dashed #475569; margin-top: 16px;';
+            addBtn.onclick = () => document.getElementById('add-exercise-form').classList.toggle('hidden');
+            addBtn.innerHTML = '+ ADD CUSTOM EXERCISE';
+            list.appendChild(addBtn);
+
+            // Add Custom Exercise Form
+            if (!document.getElementById('add-exercise-form')) {
+                const form = document.createElement('div');
+                form.id = 'add-exercise-form';
+                form.className = 'hidden';
+                form.style.cssText = 'background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; margin-top: 16px;';
+                form.innerHTML = `
+                    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 16px;">New Exercise</h3>
+                    <div style="display: grid; gap: 12px;">
+                        <input type="text" id="new-ex-name" placeholder="Exercise Name *" />
+                        <div class="input-grid">
+                            <input type="number" id="new-ex-sets" placeholder="Sets" value="3" />
+                            <input type="text" id="new-ex-reps" placeholder="Reps (e.g. 8-12) *" />
+                        </div>
+                        <input type="text" id="new-ex-muscle" placeholder="Muscle Group" />
+                        <div style="display: flex; gap: 8px;">
+                            <button class="primary" onclick="addCustomExercise()" style="flex: 1;">Add Exercise</button>
+                            <button class="primary" onclick="document.getElementById('add-exercise-form').classList.add('hidden')" 
+                                    style="background: #334155; padding: 12px 24px;">Cancel</button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(form);
+            }
+
+            updateFinishButton();
+        }
+
+        function toggleMoveMenu(exerciseId) {
+            const menu = document.getElementById(`move-menu-${exerciseId}`);
+            const label = document.getElementById(`move-label-${exerciseId}`);
+            const isHidden = menu.classList.contains('hidden');
+            
+            // Close all other move menus
+            document.querySelectorAll('.move-grid').forEach(m => m.classList.add('hidden'));
+            document.querySelectorAll('[id^="move-label-"]').forEach(l => l.textContent = 'Move to Different Day');
+            
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                label.textContent = 'Cancel Move';
+            } else {
+                menu.classList.add('hidden');
+                label.textContent = 'Move to Different Day';
+            }
+        }
+
+        function moveExercise(exerciseId, toDay) {
+            // Find the exercise
+            const exercise = exercises[currentDay].exercises.find(ex => ex.id === exerciseId);
+            if (!exercise) return;
+
+            // Remove from current day
+            exercises[currentDay].exercises = exercises[currentDay].exercises.filter(ex => ex.id !== exerciseId);
+            
+            // Add to target day
+            exercises[toDay].exercises.push(exercise);
+
+            // Save to localStorage (you might want to save moved exercises separately)
+            alert(`Moved ${exercise.name} to ${exercises[toDay].name}`);
+            renderExercises();
+        }
+
+        function removeExercise(exerciseId) {
+            if (!confirm('Remove this exercise from your workout?')) return;
+            exercises[currentDay].exercises = exercises[currentDay].exercises.filter(ex => ex.id !== exerciseId);
+            renderExercises();
+        }
+
+        function addCustomExercise() {
+            const name = document.getElementById('new-ex-name').value;
+            const sets = parseInt(document.getElementById('new-ex-sets').value);
+            const reps = document.getElementById('new-ex-reps').value;
+            const muscle = document.getElementById('new-ex-muscle').value;
+
+            if (!name || !reps) {
+                alert('Please fill in Exercise Name and Reps');
+                return;
+            }
+
+            const newExercise = {
+                id: `custom-${Date.now()}`,
+                name: name,
+                sets: sets || 3,
+                reps: reps,
+                muscle: muscle || 'Custom'
+            };
+
+            exercises[currentDay].exercises.push(newExercise);
+
+            // Clear form
+            document.getElementById('new-ex-name').value = '';
+            document.getElementById('new-ex-sets').value = '3';
+            document.getElementById('new-ex-reps').value = '';
+            document.getElementById('new-ex-muscle').value = '';
+            document.getElementById('add-exercise-form').classList.add('hidden');
+
+            renderExercises();
+        }
+
+        function renderSets(exerciseId) {
+            const container = document.getElementById(`sets-${exerciseId}`);
+            if (!container) return;
+
+            const sets = getTodaySets(exerciseId);
+            if (sets.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = '<p class="label">TODAY\'S SETS</p>';
+            sets.forEach((set, idx) => {
+                const div = document.createElement('div');
+                div.className = 'set-item';
+                div.innerHTML = `
+                    <span>Set ${idx + 1}: <strong style="color: #3b82f6">${set.weight} lbs</strong> × ${set.reps} reps ${set.isPR ? '🏆' : ''}</span>
+                    <button onclick="removeSet('${exerciseId}', ${idx})">✕</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleExercise(id) {
+            const body = document.getElementById(`ex-${id}`);
+            body.classList.toggle('hidden');
+        }
+
+        function addSet(exerciseId) {
+            const weight = parseFloat(document.getElementById(`weight-${exerciseId}`).value);
+            const reps = parseInt(document.getElementById(`reps-${exerciseId}`).value);
+
+            if (!weight || !reps) return;
+
+            const today = getToday();
+            if (!workoutData[today]) workoutData[today] = {};
+            if (!workoutData[today][currentDay]) workoutData[today][currentDay] = {};
+            if (!workoutData[today][currentDay][exerciseId]) workoutData[today][currentDay][exerciseId] = [];
+
+            const isPR = !personalRecords[exerciseId] || weight > personalRecords[exerciseId];
+            if (isPR) {
+                personalRecords[exerciseId] = weight;
+                localStorage.setItem('prs', JSON.stringify(personalRecords));
+                alert(`🏆 NEW PERSONAL RECORD! ${weight} lbs!`);
+            }
+
+            workoutData[today][currentDay][exerciseId].push({
+                weight,
+                reps,
+                isPR,
+                timestamp: new Date().toISOString()
+            });
+
+            localStorage.setItem('workout-data', JSON.stringify(workoutData));
+
+            document.getElementById(`weight-${exerciseId}`).value = '';
+            document.getElementById(`reps-${exerciseId}`).value = '';
+
+            renderSets(exerciseId);
+            renderExercises();
+        }
+
+        function removeSet(exerciseId, idx) {
+            const today = getToday();
+            workoutData[today][currentDay][exerciseId].splice(idx, 1);
+            localStorage.setItem('workout-data', JSON.stringify(workoutData));
+            renderSets(exerciseId);
+            renderExercises();
+        }
+
+        function saveExerciseNote(exerciseId) {
+            const key = `${currentDay}-${exerciseId}`;
+            exerciseNotes[key] = document.getElementById(`note-${exerciseId}`).value;
+            localStorage.setItem('exercise-notes', JSON.stringify(exerciseNotes));
+        }
+
+        function clearPR(exerciseId) {
+            if (!confirm('Clear this PR?')) return;
+            delete personalRecords[exerciseId];
+            localStorage.setItem('prs', JSON.stringify(personalRecords));
+            renderExercises();
+        }
+
+        function updateFinishButton() {
+            const today = getToday();
+            const hasSets = workoutData[today]?.[currentDay] && Object.keys(workoutData[today][currentDay]).length > 0;
+            document.getElementById('finish-btn').classList.toggle('hidden', !hasSets);
+        }
+
+        function finishWorkout() {
+            const today = getToday();
+            const noteKey = `${today}-${currentDay}`;
+            
+            const workout = {
+                date: today,
+                day: currentDay,
+                exercises: workoutData[today][currentDay],
+                notes: workoutNotes[noteKey] || ''
+            };
+
+            workoutHistory.unshift(workout);
+            localStorage.setItem('workout-history', JSON.stringify(workoutHistory));
+
+            delete workoutData[today][currentDay];
+            delete workoutNotes[noteKey];
+            localStorage.setItem('workout-data', JSON.stringify(workoutData));
+            localStorage.setItem('workout-notes', JSON.stringify(workoutNotes));
+
+            document.getElementById('workout-notes').value = '';
+            renderExercises();
+            alert('💪 Workout saved!');
+        }
+
+        function renderProgress() {
+            const content = document.getElementById('progress-content');
+            
+            // Day selector for progress view
+            content.innerHTML = `
+                <div class="day-selector">
+                    <button class="day-btn ${currentDay === 'day1' ? 'active' : ''}" onclick="currentDay='day1'; renderProgress();">
+                        <div class="name">DAY 1</div>
+                    </button>
+                    <button class="day-btn ${currentDay === 'day2' ? 'active' : ''}" onclick="currentDay='day2'; renderProgress();">
+                        <div class="name">DAY 2</div>
+                    </button>
+                    <button class="day-btn ${currentDay === 'day3' ? 'active' : ''}" onclick="currentDay='day3'; renderProgress();">
+                        <div class="name">DAY 3</div>
+                    </button>
+                </div>
+            `;
+
+            // Personal Records Section
+            const dayExercises = exercises[currentDay].exercises;
+            const prsForDay = dayExercises.filter(ex => personalRecords[ex.id]);
+
+            if (prsForDay.length > 0) {
+                const prSection = document.createElement('div');
+                prSection.style.cssText = 'background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;';
+                prSection.innerHTML = '<h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 12px; color: #fbbf24;">🏆 Personal Records</h3>';
+                
+                const prGrid = document.createElement('div');
+                prGrid.style.cssText = 'display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;';
+                
+                prsForDay.forEach(ex => {
+                    const prCard = document.createElement('div');
+                    prCard.className = 'pr-card';
+                    prCard.innerHTML = `
+                        <div class="name">${ex.name}</div>
+                        <div class="value">${personalRecords[ex.id]} <span style="font-size: 0.875rem; color: #94a3b8;">lbs</span></div>
+                    `;
+                    prGrid.appendChild(prCard);
+                });
+                
+                prSection.appendChild(prGrid);
+                content.appendChild(prSection);
+            }
+
+            // Exercise History
+            const historySection = document.createElement('div');
+            
+            dayExercises.forEach(ex => {
+                const exerciseHistory = workoutHistory
+                    .filter(w => w.day === currentDay && w.exercises[ex.id])
+                    .slice(0, 5);
+
+                if (exerciseHistory.length === 0) return;
+
+                const card = document.createElement('div');
+                card.style.cssText = 'background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; margin-bottom: 16px;';
+                
+                const header = document.createElement('div');
+                header.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;';
+                header.innerHTML = `
+                    <h3 style="font-size: 1.125rem; font-weight: 600;">${ex.name}</h3>
+                    ${personalRecords[ex.id] ? `<span style="color: #fbbf24; font-size: 0.875rem; font-weight: 600;">PR: ${personalRecords[ex.id]} lbs</span>` : ''}
+                `;
+                card.appendChild(header);
+
+                exerciseHistory.forEach(session => {
+                    const sets = session.exercises[ex.id];
+                    const maxWeight = Math.max(...sets.map(s => s.weight));
+                    const totalVolume = sets.reduce((sum, s) => sum + (s.weight * s.reps), 0);
+                    const hadPR = sets.some(s => s.isPR);
+
+                    const sessionDiv = document.createElement('div');
+                    sessionDiv.style.cssText = `padding: 12px; margin-bottom: 8px; border-radius: 8px; border: 1px solid #334155; ${hadPR ? 'background: rgba(234,179,8,0.1); border-color: rgba(234,179,8,0.3);' : 'background: #0f172a;'}`;
+                    
+                    const dateHeader = document.createElement('div');
+                    dateHeader.style.cssText = 'display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.875rem;';
+                    dateHeader.innerHTML = `
+                        <span style="color: #94a3b8;">${new Date(session.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} ${hadPR ? '🏆' : ''}</span>
+                        <span style="color: #3b82f6; font-weight: 600;">Max: ${maxWeight} lbs</span>
+                    `;
+                    sessionDiv.appendChild(dateHeader);
+
+                    const setsDiv = document.createElement('div');
+                    setsDiv.style.cssText = 'display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;';
+                    sets.forEach(set => {
+                        const setSpan = document.createElement('span');
+                        setSpan.style.cssText = `padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; ${set.isPR ? 'background: #eab308; color: white;' : 'background: #1e293b;'}`;
+                        setSpan.textContent = `${set.weight}×${set.reps}`;
+                        setsDiv.appendChild(setSpan);
+                    });
+                    sessionDiv.appendChild(setsDiv);
+
+                    const volumeDiv = document.createElement('div');
+                    volumeDiv.style.cssText = 'font-size: 0.75rem; color: #64748b;';
+                    volumeDiv.textContent = `Volume: ${totalVolume.toLocaleString()} lbs`;
+                    sessionDiv.appendChild(volumeDiv);
+
+                    card.appendChild(sessionDiv);
+                });
+
+                historySection.appendChild(card);
+            });
+
+            if (historySection.children.length === 0) {
+                historySection.innerHTML = '<p style="color: #64748b; text-align: center; padding: 48px 0;">No workout history yet for this day.</p>';
+            }
+
+            content.appendChild(historySection);
+        }
+
+        function clearHistory() {
+            if (!confirm('Are you sure you want to clear all workout history? This cannot be undone.')) return;
+            workoutHistory = [];
+            localStorage.setItem('workout-history', JSON.stringify(workoutHistory));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const content = document.getElementById('history-content');
+            
+            if (workoutHistory.length === 0) {
+                content.innerHTML = '<p style="color: #64748b; text-align: center; padding: 48px 0;">No completed workouts yet. Start lifting!</p>';
+                return;
+            }
+
+            // Add clear history button
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'history-header';
+            headerDiv.innerHTML = `
+                <div></div>
+                <button class="mgmt-btn red" style="width: auto; padding: 8px 16px;" onclick="clearHistory()">Clear History</button>
+            `;
+            content.innerHTML = '';
+            content.appendChild(headerDiv);
+
+            workoutHistory.forEach(workout => {
+                const totalSets = Object.values(workout.exercises).reduce((sum, sets) => sum + sets.length, 0);
+                const exerciseCount = Object.keys(workout.exercises).length;
+
+                const div = document.createElement('div');
+                div.style.cssText = 'background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; margin-bottom: 12px;';
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <div>
+                            <h3 style="font-size: 1.125rem; font-weight: 600;">${exercises[workout.day].name}</h3>
+                            <p style="font-size: 0.875rem; color: #64748b;">${new Date(workout.date).toLocaleDateString()}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p style="font-size: 1.5rem; font-weight: 600; color: #3b82f6;">${totalSets}</p>
+                            <p style="font-size: 0.75rem; color: #64748b;">total sets</p>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.875rem; color: #94a3b8;">${exerciseCount} exercises completed</p>
+                    ${workout.notes ? `<p style="font-size: 0.875rem; color: #94a3b8; font-style: italic; margin-top: 12px; padding-top: 12px; border-top: 1px solid #334155;">"${workout.notes}"</p>` : ''}
+                `;
+                content.appendChild(div);
+            });
+        }
+
+        // Initialize
+        renderExercises();
+    </script>
+</body>
+</html>
