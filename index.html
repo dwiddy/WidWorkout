@@ -336,15 +336,15 @@
             <div class="day-selector">
                 <button class="day-btn active" onclick="selectDay('day1')">
                     <div class="name">DAY 1</div>
-                    <div class="desc">Chest + Squats</div>
+                    <div class="desc">Chest + Core</div>
                 </button>
                 <button class="day-btn" onclick="selectDay('day2')">
                     <div class="name">DAY 2</div>
-                    <div class="desc">Pull + Deadlifts</div>
+                    <div class="desc">Pull + KB Circuit</div>
                 </button>
                 <button class="day-btn" onclick="selectDay('day3')">
                     <div class="name">DAY 3</div>
-                    <div class="desc">Chest + Arms + Core</div>
+                    <div class="desc">Chest + Arms</div>
                 </button>
             </div>
 
@@ -377,39 +377,35 @@
         // Data
         const exercises = {
             day1: {
-                name: 'Day 1: Chest + Squats + Core',
+                name: 'Day 1: Chest Priority + Core',
                 exercises: [
                     { id: 'machine-chest', name: 'Machine Chest Press', sets: 3, reps: '6-8', muscle: 'Chest' },
                     { id: 'incline', name: 'Incline DB Press', sets: 3, reps: '8-10', muscle: 'Upper Chest' },
                     { id: 'weighted-dips', name: 'Weighted Dips (lean forward)', sets: 3, reps: 'AMRAP', muscle: 'Chest/Triceps' },
                     { id: 'cable-fly', name: 'Cable Flyes', sets: 3, reps: '12-15', muscle: 'Chest' },
-                    { id: 'squat', name: 'Back Squat', sets: 3, reps: '6-10', muscle: 'Legs' },
                     { id: 'weighted-crunch', name: 'Weighted Ab Crunch', sets: 3, reps: '12-15', muscle: 'Core' },
                     { id: 'plank', name: 'Plank', sets: 3, reps: '30-60s', muscle: 'Core' }
                 ]
             },
             day2: {
-                name: 'Day 2: Pull + Deadlifts + Shoulders',
+                name: 'Day 2: Pull + Shoulders + KB Circuit',
                 exercises: [
                     { id: 'pullup', name: 'Pull-Ups / Lat Pulldown', sets: 3, reps: 'AMRAP/8-12', muscle: 'Lats' },
                     { id: 'row', name: 'Bent-Over Row', sets: 3, reps: '8-12', muscle: 'Mid Back' },
-                    { id: 'deadlift', name: 'Romanian Deadlift', sets: 3, reps: '8-12', muscle: 'Hamstrings' },
                     { id: 'db-ohp', name: 'Overhead DB Press', sets: 3, reps: '8-12', muscle: 'Shoulders' },
-                    { id: 'face', name: 'Face Pulls', sets: 3, reps: '12-15', muscle: 'Rear Delts' },
-                    { id: 'cable', name: 'Cable / DB Row', sets: 3, reps: '8-12', muscle: 'Back' },
-                    { id: 'curl', name: 'Bicep Curls', sets: 3, reps: '10-15', muscle: 'Biceps' }
+                    { id: 'curl', name: 'Bicep Curls', sets: 3, reps: '10-15', muscle: 'Biceps' },
+                    { id: 'kb-circuit', name: 'KB Circuit: 15 Swings, 10 Goblet Squats, 10 Reverse Lunges, 8 Push Press, 20 Russian Twists', sets: 3, reps: '60-90s rest', muscle: 'Full Body' }
                 ]
             },
             day3: {
-                name: 'Day 3: Chest Volume + Arms + Core',
+                name: 'Day 3: Chest Volume + Arms + Shoulders',
                 exercises: [
                     { id: 'pec-deck', name: 'Pec Deck Machine', sets: 3, reps: '10-12', muscle: 'Chest' },
                     { id: 'cable-crossover', name: 'Cable Crossover', sets: 3, reps: '12-15', muscle: 'Chest' },
-                    { id: 'skullcrusher', name: 'Skull Crushers', sets: 3, reps: '10-12', muscle: 'Triceps' },
+                    { id: 'db-overhead-tri', name: 'DB Overhead Tricep Extension', sets: 3, reps: '10-12', muscle: 'Triceps' },
                     { id: 'tricep-pulldown', name: 'Tricep Pulldowns', sets: 3, reps: '10-15', muscle: 'Triceps' },
                     { id: 'hammer', name: 'Hammer Curls', sets: 3, reps: '10-12', muscle: 'Biceps' },
-                    { id: 'cable-lateral', name: 'Cable Lateral Raises', sets: 3, reps: '12-15', muscle: 'Side Delts' },
-                    { id: 'leg-raise', name: 'Hanging Leg Raises', sets: 3, reps: '10-15', muscle: 'Lower Abs' }
+                    { id: 'cable-lateral', name: 'Cable Lateral Raises', sets: 3, reps: '12-15', muscle: 'Side Delts' }
                 ]
             }
         };
